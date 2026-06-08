@@ -161,8 +161,15 @@
     .thumb:hover img { transform: scale(1.03); }
 
     .thumb iframe {
-      width:100%; height:100%;
-      border: none; display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none; 
+      display: none;
+      background: #070709;
+      object-fit: cover;
     }
     .thumb.playing img    { display: none; }
     .thumb.playing iframe { display: block; }
@@ -451,7 +458,7 @@ function renderVideos(videos) {
   }
   videos.sort((a, b) => new Date(b.added_at) - new Date(a.added_at));
   grid.innerHTML = videos.map((v, i) => {
-    // Dynamically derive the raw filename directly from your Supabase public CDN URL structure
+    // Parse out raw bucket path cleanly from Supabase storage distribution URL
     let decodedUrl = decodeURIComponent(v.stream_url || "");
     let supabaseFileName = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
     if (!supabaseFileName) {
@@ -490,17 +497,21 @@ function renderVideos(videos) {
 function togglePlay(id, url) {
   const thumb = document.getElementById("thumb-" + id);
   const frame = document.getElementById("frame-" + id);
+  
   if (thumb.classList.contains("playing")) {
     frame.src = "";
     thumb.classList.remove("playing");
-  } else {
-    document.querySelectorAll(".thumb.playing").forEach(t => {
-      t.classList.remove("playing");
-      t.querySelector("iframe").src = "";
-    });
-    frame.src = url;
-    thumb.classList.add("playing");
+    return;
   }
+  
+  document.querySelectorAll(".thumb.playing").forEach(t => {
+    t.classList.remove("playing");
+    t.querySelector("iframe").src = "";
+  });
+  
+  frame.style.background = "#070709";
+  frame.src = url;
+  thumb.classList.add("playing");
 }
 
 async function markDone(id, supabasePath) {
@@ -509,7 +520,6 @@ async function markDone(id, supabasePath) {
   btn.disabled = true;
   btn.textContent = "Deleting…";
   try {
-    // Aligned workflow fields explicitly to point to the new parameters
     await triggerWorkflow("delete.yml", { video_id: id, supabase_file_path: supabasePath });
     card.style.transition = "all .35s ease";
     card.style.opacity = "0";
@@ -561,14 +571,12 @@ async function addHandle() {
   
   if (!handle) return;
 
-  // Visual state lock engagement
   btn.disabled = true;
   btn.textContent = "Adding...";
   input.disabled = true;
 
   try {
-    // Aligned payload argument names to match core expectations
-    await triggerWorkflow("handles.yml", { action_type: "add", handle: handle });
+    await triggerWorkflow("handles.yml", { action: "add", handle: handle });
     input.value = "";
     toast(`✓ @${handle} added — workflow triggered`);
     showPending(`Adding @${handle}…`);
@@ -576,7 +584,6 @@ async function addHandle() {
   } catch (e) {
     toast("⚠ " + e.message);
   } finally {
-    // Release interface locks cleanly
     btn.disabled = false;
     btn.textContent = "+ Add";
     input.disabled = false;
@@ -584,12 +591,11 @@ async function addHandle() {
 }
 
 async function removeHandle(btnElement, handle) {
-  // Lock target item button to prevent rapid double-clicks
   btnElement.disabled = true;
   btnElement.textContent = "...";
 
   try {
-    await triggerWorkflow("handles.yml", { action_type: "remove", handle: handle });
+    await triggerWorkflow("handles.yml", { action: "remove", handle: handle });
     toast(`Removed @${handle}`);
     showPending(`Removing @${handle}…`);
     setTimeout(loadHandles, 8000);
