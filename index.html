@@ -83,12 +83,14 @@
       border: 1px solid var(--border2);
       color: var(--muted); padding: 7px 14px; font-size: .8rem;
     }
-    .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-sm:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn-sm:disabled { opacity: .5; cursor: not-allowed; }
+    
     .btn-primary {
       background: var(--accent); color: #070709;
       padding: 9px 18px; font-size: .85rem;
     }
-    .btn-primary:hover { background: #b8ef3d; transform: translateY(-1px); }
+    .btn-primary:hover:not(:disabled) { background: #b8ef3d; transform: translateY(-1px); }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
     /* ── tabs ────────────────────────────────────── */
@@ -254,6 +256,7 @@
       padding: 9px 12px; outline: none;
       transition: border-color .2s;
     }
+    input:disabled { opacity: .5; cursor: not-allowed; }
     input:focus { border-color: var(--accent); }
     input::placeholder { color: var(--muted); }
 
@@ -273,7 +276,8 @@
       color: var(--red); padding: 3px 9px;
       font-size: .72rem; border-radius: 5px;
     }
-    .btn-rm:hover { background: rgba(255,79,107,.2); }
+    .btn-rm:hover:not(:disabled) { background: rgba(255,79,107,.2); }
+    .btn-rm:disabled { opacity: .5; cursor: not-allowed; }
 
     /* ── toast ───────────────────────────────────── */
     #toast {
@@ -315,7 +319,7 @@
       <h1>Insta<em>Watcher</em></h1>
     </div>
     <div class="hdr-btns">
-      <button class="btn-sm" onclick="pollNow(this)">↻ Poll now</button>
+      <button id="hdr-btn-poll" class="btn-sm" onclick="pollNow(this)">↻ Poll now</button>
       <button class="btn-sm" onclick="switchTab('settings')">⚙ Settings</button>
     </div>
   </header>
@@ -325,7 +329,6 @@
     <button class="tab"    id="tab-settings" onclick="switchTab('settings')">Settings</button>
   </nav>
 
-  <!-- INBOX -->
   <div class="panel on" id="panel-inbox">
     <div id="pending-bar" class="pending-bar">
       <div class="mini-spin"></div>
@@ -338,7 +341,6 @@
     <div id="grid"></div>
   </div>
 
-  <!-- SETTINGS -->
   <div class="panel" id="panel-settings">
 
     <div class="sbox">
@@ -368,7 +370,7 @@
       <ul class="hlist" id="hlist"></ul>
       <div class="irow">
         <input type="text" id="new-handle" placeholder="@username" />
-        <button class="btn-primary" onclick="addHandle()">+ Add</button>
+        <button id="add-handle-btn" class="btn-primary" onclick="addHandle()">+ Add</button>
       </div>
     </div>
 
@@ -413,7 +415,6 @@ async function ghAPI(path, opts = {}) {
     const err = await res.text();
     throw new Error(`GitHub API ${res.status}: ${err}`);
   }
-  // 204 No Content (workflow dispatch returns this)
   if (res.status === 204) return null;
   return res.json();
 }
@@ -426,12 +427,10 @@ async function triggerWorkflow(workflow, inputs = {}) {
 }
 
 // ── Read videos.json directly from GitHub Pages repo ─────────────────────────
-// videos.json is committed into this same repo by the bot.
 async function loadVideos() {
   const grid = document.getElementById("grid");
   grid.innerHTML = '<div class="spin"></div>';
   try {
-    // Always bust cache
     const url = `videos.json?_=${Date.now()}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(res.status);
@@ -450,7 +449,6 @@ function renderVideos(videos) {
     grid.innerHTML = `<div class="empty"><div class="ico">✦</div><p>All caught up — inbox empty.</p></div>`;
     return;
   }
-  // Sort newest first
   videos.sort((a, b) => new Date(b.added_at) - new Date(a.added_at));
   grid.innerHTML = videos.map((v, i) => `
     <div class="card" id="card-${esc(v.id)}" style="animation-delay:${i * 50}ms">
@@ -524,7 +522,6 @@ function updateCount() {
 async function loadHandles() {
   const list = document.getElementById("hlist");
   try {
-    // Read handles.json from the backend repo via GitHub API
     const data = await ghAPI("/contents/handles.json");
     const handles = JSON.parse(atob(data.content));
     renderHandles(handles);
@@ -542,33 +539,54 @@ function renderHandles(handles) {
   list.innerHTML = handles.map(h => `
     <li class="hrow">
       <span class="hname">@${esc(h)}</span>
-      <button class="btn-rm" onclick="removeHandle('${esc(h)}')">✕</button>
+      <button class="btn-rm" onclick="removeHandle(this, '${esc(h)}')">✕</button>
     </li>
   `).join("");
 }
 
 async function addHandle() {
   const input  = document.getElementById("new-handle");
+  const btn    = document.getElementById("add-handle-btn");
   const handle = input.value.trim().replace(/^@/, "").toLowerCase();
+  
   if (!handle) return;
+
+  // Visual state lock engagement
+  btn.disabled = true;
+  btn.textContent = "Adding...";
+  input.disabled = true;
+
   try {
-    await triggerWorkflow("handles.yml", { action: "add", handle });
+    // Aligned payload argument names to match core expectations
+    await triggerWorkflow("handles.yml", { action_type: "add", handle: handle });
     input.value = "";
     toast(`✓ @${handle} added — workflow triggered`);
     showPending(`Adding @${handle}…`);
-    setTimeout(loadHandles, 8000);  // refresh after workflow likely done
+    setTimeout(loadHandles, 8000);  
   } catch (e) {
     toast("⚠ " + e.message);
+  } finally {
+    // Release interface locks cleanly
+    btn.disabled = false;
+    btn.textContent = "+ Add";
+    input.disabled = false;
   }
 }
 
-async function removeHandle(handle) {
+async function removeHandle(btnElement, handle) {
+  // Lock target item button to prevent rapid double-clicks
+  btnElement.disabled = true;
+  btnElement.textContent = "...";
+
   try {
-    await triggerWorkflow("handles.yml", { action: "remove", handle });
+    await triggerWorkflow("handles.yml", { action_type: "remove", handle: handle });
     toast(`Removed @${handle}`);
+    showPending(`Removing @${handle}…`);
     setTimeout(loadHandles, 8000);
   } catch (e) {
     toast("⚠ " + e.message);
+    btnElement.disabled = false;
+    btnElement.textContent = "✕";
   }
 }
 
