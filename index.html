@@ -450,7 +450,15 @@ function renderVideos(videos) {
     return;
   }
   videos.sort((a, b) => new Date(b.added_at) - new Date(a.added_at));
-  grid.innerHTML = videos.map((v, i) => `
+  grid.innerHTML = videos.map((v, i) => {
+    // Dynamically derive the raw filename directly from your Supabase public CDN URL structure
+    let decodedUrl = decodeURIComponent(v.stream_url || "");
+    let supabaseFileName = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
+    if (!supabaseFileName) {
+      supabaseFileName = `${v.handle}_${v.id}.mp4`;
+    }
+
+    return `
     <div class="card" id="card-${esc(v.id)}" style="animation-delay:${i * 50}ms">
       <div class="thumb" id="thumb-${esc(v.id)}" onclick="togglePlay('${esc(v.id)}','${esc(v.embed_url || v.stream_url)}')">
         ${v.thumbnail
@@ -470,12 +478,13 @@ function renderVideos(videos) {
       </div>
       <div class="cactions">
         <button class="btn-done" id="done-${esc(v.id)}"
-          onclick="markDone('${esc(v.id)}','${esc(v.gdrive_id)}')">✓ Done — delete</button>
+          onclick="markDone('${esc(v.id)}','${esc(supabaseFileName)}')">✓ Done — delete</button>
         <button class="btn-ext"
-          onclick="window.open('${esc(v.stream_url)}','_blank')" title="Open in Drive">↗</button>
+          onclick="window.open('${esc(v.stream_url)}','_blank')" title="Open Asset Source">↗</button>
       </div>
     </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 function togglePlay(id, url) {
@@ -494,19 +503,20 @@ function togglePlay(id, url) {
   }
 }
 
-async function markDone(id, gdriveId) {
+async function markDone(id, supabasePath) {
   const btn  = document.getElementById("done-" + id);
   const card = document.getElementById("card-" + id);
   btn.disabled = true;
   btn.textContent = "Deleting…";
   try {
-    await triggerWorkflow("delete.yml", { video_id: id, gdrive_file_id: gdriveId });
+    // Aligned workflow fields explicitly to point to the new parameters
+    await triggerWorkflow("delete.yml", { video_id: id, supabase_file_path: supabasePath });
     card.style.transition = "all .35s ease";
     card.style.opacity = "0";
     card.style.transform = "scale(.94)";
     setTimeout(() => { card.remove(); updateCount(); }, 370);
     toast("🗑 Delete workflow triggered");
-    showPending("Deleting from Drive…");
+    showPending("Deleting from Supabase Storage…");
   } catch (e) {
     btn.disabled = false;
     btn.textContent = "✓ Done — delete";
