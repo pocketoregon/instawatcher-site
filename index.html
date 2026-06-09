@@ -32,24 +32,18 @@
       min-height: 100vh;
     }
 
-    /* ── scanline effect ─────────────────────────── */
     body::after {
       content: '';
       position: fixed; inset: 0;
       background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,.05) 2px,
-        rgba(0,0,0,.05) 4px
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,.05) 2px, rgba(0,0,0,.05) 4px
       );
       pointer-events: none; z-index: 9998;
     }
 
-    /* ── layout ──────────────────────────────────── */
     .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px 80px; }
 
-    /* ── header ──────────────────────────────────── */
     header {
       padding: 32px 0 24px;
       display: flex; align-items: center; justify-content: space-between;
@@ -70,10 +64,8 @@
     }
     .brand h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em; }
     .brand h1 em { color: var(--accent); font-style: normal; }
-
     .hdr-btns { display: flex; gap: 8px; }
 
-    /* ── buttons ─────────────────────────────────── */
     button {
       font-family: var(--head); cursor: pointer; border: none;
       border-radius: 7px; font-weight: 600; transition: all .15s;
@@ -85,7 +77,6 @@
     }
     .btn-sm:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
     .btn-sm:disabled { opacity: .5; cursor: not-allowed; }
-    
     .btn-primary {
       background: var(--accent); color: #070709;
       padding: 9px 18px; font-size: .85rem;
@@ -93,7 +84,6 @@
     .btn-primary:hover:not(:disabled) { background: #b8ef3d; transform: translateY(-1px); }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-    /* ── tabs ────────────────────────────────────── */
     .tabs { display: flex; gap: 2px; padding: 16px 0 0; }
     .tab {
       background: transparent;
@@ -104,11 +94,9 @@
     .tab.on { background: var(--surface); border-color: var(--border); color: var(--text); }
     .tab:hover:not(.on) { color: var(--text); }
 
-    /* ── panels ──────────────────────────────────── */
     .panel { display: none; padding-top: 24px; }
     .panel.on { display: block; }
 
-    /* ── toolbar ─────────────────────────────────── */
     .toolbar {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 20px;
@@ -120,14 +108,12 @@
     }
     .badge strong { color: var(--accent); }
 
-    /* ── grid ────────────────────────────────────── */
     #grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 16px;
     }
 
-    /* ── card ────────────────────────────────────── */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -146,7 +132,7 @@
       to   { opacity:1; transform:translateY(0); }
     }
 
-    /* thumbnail / player */
+    /* ── thumbnail / player ── */
     .thumb {
       position: relative;
       aspect-ratio: 9/16;
@@ -154,25 +140,29 @@
       cursor: pointer;
       overflow: hidden;
     }
-    .thumb img {
-      width:100%; height:100%; object-fit:cover; display:block;
+
+    /* thumbnail image — shown before play */
+    .thumb .t-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
       transition: transform .3s;
     }
-    .thumb:hover img { transform: scale(1.03); }
+    .thumb:hover .t-img { transform: scale(1.03); }
 
-    .thumb iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none; 
-      display: none;
-      background: #070709;
+    /* video element — hidden until play clicked */
+    .thumb .t-vid {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
       object-fit: cover;
+      display: none;
+      background: #0a0a10;
     }
-    .thumb.playing img    { display: none; }
-    .thumb.playing iframe { display: block; }
+
+    /* when playing: hide image & overlay, show video */
+    .thumb.playing .t-img     { display: none; }
+    .thumb.playing .t-vid     { display: block; }
     .thumb.playing .play-overlay { display: none; }
 
     .play-overlay {
@@ -198,9 +188,9 @@
       background: rgba(7,7,9,.75); backdrop-filter: blur(4px);
       color: var(--accent); padding: 3px 7px; border-radius: 4px;
       border: 1px solid rgba(200,255,87,.2);
+      z-index: 2;
     }
 
-    /* card body */
     .cinfo { padding: 12px 12px 8px; }
     .ctitle {
       font-size: .88rem; font-weight: 600; line-height: 1.35;
@@ -224,11 +214,9 @@
     }
     .btn-ext:hover { background: #333348; }
 
-    /* ── empty ───────────────────────────────────── */
     .empty { text-align:center; padding: 72px 20px; color: var(--muted); }
     .empty .ico { font-size: 2.6rem; margin-bottom: 10px; }
 
-    /* ── loading ─────────────────────────────────── */
     .spin {
       width: 28px; height: 28px; margin: 60px auto;
       border: 2.5px solid var(--border);
@@ -238,7 +226,6 @@
     }
     @keyframes rot { to { transform: rotate(360deg); } }
 
-    /* ── settings ────────────────────────────────── */
     .sbox {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r); padding: 22px; margin-bottom: 16px;
@@ -267,7 +254,6 @@
     input:focus { border-color: var(--accent); }
     input::placeholder { color: var(--muted); }
 
-    /* handles */
     .hlist { list-style: none; margin-bottom: 12px; }
     .hrow {
       display: flex; align-items: center; justify-content: space-between;
@@ -286,7 +272,6 @@
     .btn-rm:hover:not(:disabled) { background: rgba(255,79,107,.2); }
     .btn-rm:disabled { opacity: .5; cursor: not-allowed; }
 
-    /* ── toast ───────────────────────────────────── */
     #toast {
       position: fixed; bottom: 24px; left: 50%;
       transform: translateX(-50%) translateY(60px);
@@ -298,7 +283,6 @@
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
 
-    /* ── pending indicator ───────────────────────── */
     .pending-bar {
       display: none;
       background: rgba(200,255,87,.06);
@@ -349,7 +333,6 @@
   </div>
 
   <div class="panel" id="panel-settings">
-
     <div class="sbox">
       <h2>GitHub Config</h2>
       <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:14px;line-height:1.6">
@@ -380,14 +363,12 @@
         <button id="add-handle-btn" class="btn-primary" onclick="addHandle()">+ Add</button>
       </div>
     </div>
-
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ── Config (stored in localStorage) ──────────────────────────────────────────
 let CFG = JSON.parse(localStorage.getItem("iw_cfg") || "{}");
 
 function saveCfg() {
@@ -402,7 +383,6 @@ function loadCfg() {
   document.getElementById("cfg-backend").value = CFG.backend || "";
 }
 
-// ── GitHub API helpers ────────────────────────────────────────────────────────
 async function ghAPI(path, opts = {}) {
   if (!CFG.token || !CFG.backend) {
     toast("⚠ Set your GitHub config in Settings first");
@@ -433,7 +413,6 @@ async function triggerWorkflow(workflow, inputs = {}) {
   });
 }
 
-// ── Read videos.json directly from GitHub Pages repo ─────────────────────────
 async function loadVideos() {
   const grid = document.getElementById("grid");
   grid.innerHTML = '<div class="spin"></div>';
@@ -458,20 +437,20 @@ function renderVideos(videos) {
   }
   videos.sort((a, b) => new Date(b.added_at) - new Date(a.added_at));
   grid.innerHTML = videos.map((v, i) => {
-    // Parse out raw bucket path cleanly from Supabase storage distribution URL
     let decodedUrl = decodeURIComponent(v.stream_url || "");
     let supabaseFileName = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
-    if (!supabaseFileName) {
-      supabaseFileName = `${v.handle}_${v.id}.mp4`;
-    }
+    if (!supabaseFileName) supabaseFileName = `${v.handle}_${v.id}.mp4`;
+
+    const thumbHtml = v.thumbnail
+      ? `<img class="t-img" src="${esc(v.thumbnail)}" alt="" loading="lazy" />`
+      : `<div class="t-img" style="background:#0a0a10"></div>`;
 
     return `
     <div class="card" id="card-${esc(v.id)}" style="animation-delay:${i * 50}ms">
-      <div class="thumb" id="thumb-${esc(v.id)}" onclick="togglePlay('${esc(v.id)}','${esc(v.embed_url || v.stream_url)}')">
-        ${v.thumbnail
-          ? `<img src="${esc(v.thumbnail)}" alt="" loading="lazy" />`
-          : `<div style="width:100%;height:100%;background:#0a0a10"></div>`}
-        <iframe id="frame-${esc(v.id)}" allowfullscreen allow="autoplay"></iframe>
+      <div class="thumb" id="thumb-${esc(v.id)}" onclick="togglePlay('${esc(v.id)}','${esc(v.stream_url)}','${esc(v.thumbnail || '')}')">
+        ${thumbHtml}
+        <video class="t-vid" id="vid-${esc(v.id)}"
+          playsinline controls preload="none"></video>
         <div class="play-overlay">
           <div class="play-icon">
             <svg viewBox="0 0 16 16" fill="white"><polygon points="3,1 15,8 3,15"/></svg>
@@ -487,31 +466,36 @@ function renderVideos(videos) {
         <button class="btn-done" id="done-${esc(v.id)}"
           onclick="markDone('${esc(v.id)}','${esc(supabaseFileName)}')">✓ Done — delete</button>
         <button class="btn-ext"
-          onclick="window.open('${esc(v.stream_url)}','_blank')" title="Open Asset Source">↗</button>
+          onclick="window.open('${esc(v.stream_url)}','_blank')" title="Open video">↗</button>
       </div>
     </div>
     `;
   }).join("");
 }
 
-function togglePlay(id, url) {
+function togglePlay(id, url, thumbnail) {
   const thumb = document.getElementById("thumb-" + id);
-  const frame = document.getElementById("frame-" + id);
-  
+  const vid   = document.getElementById("vid-"   + id);
+
   if (thumb.classList.contains("playing")) {
-    frame.src = "";
+    vid.pause();
+    vid.src = "";
     thumb.classList.remove("playing");
     return;
   }
-  
+
+  // Pause any other playing videos
   document.querySelectorAll(".thumb.playing").forEach(t => {
+    const v = t.querySelector(".t-vid");
+    if (v) { v.pause(); v.src = ""; }
     t.classList.remove("playing");
-    t.querySelector("iframe").src = "";
   });
-  
-  frame.style.background = "#070709";
-  frame.src = url;
+
+  // Set poster so thumbnail shows while video loads — no grey flash
+  if (thumbnail) vid.poster = thumbnail;
+  vid.src = url;
   thumb.classList.add("playing");
+  vid.play().catch(() => {});
 }
 
 async function markDone(id, supabasePath) {
@@ -538,7 +522,6 @@ function updateCount() {
   document.getElementById("count").textContent = document.querySelectorAll(".card").length;
 }
 
-// ── Handles ───────────────────────────────────────────────────────────────────
 async function loadHandles() {
   const list = document.getElementById("hlist");
   try {
@@ -568,48 +551,38 @@ async function addHandle() {
   const input  = document.getElementById("new-handle");
   const btn    = document.getElementById("add-handle-btn");
   const handle = input.value.trim().replace(/^@/, "").toLowerCase();
-  
   if (!handle) return;
-
-  btn.disabled = true;
-  btn.textContent = "Adding...";
+  btn.disabled = true; btn.textContent = "Adding...";
   input.disabled = true;
-
   try {
-    await triggerWorkflow("handles.yml", { action: "add", handle: handle });
+    await triggerWorkflow("handles.yml", { action: "add", handle });
     input.value = "";
     toast(`✓ @${handle} added — workflow triggered`);
     showPending(`Adding @${handle}…`);
-    setTimeout(loadHandles, 8000);  
+    setTimeout(loadHandles, 8000);
   } catch (e) {
     toast("⚠ " + e.message);
   } finally {
-    btn.disabled = false;
-    btn.textContent = "+ Add";
+    btn.disabled = false; btn.textContent = "+ Add";
     input.disabled = false;
   }
 }
 
 async function removeHandle(btnElement, handle) {
-  btnElement.disabled = true;
-  btnElement.textContent = "...";
-
+  btnElement.disabled = true; btnElement.textContent = "...";
   try {
-    await triggerWorkflow("handles.yml", { action: "remove", handle: handle });
+    await triggerWorkflow("handles.yml", { action: "remove", handle });
     toast(`Removed @${handle}`);
     showPending(`Removing @${handle}…`);
     setTimeout(loadHandles, 8000);
   } catch (e) {
     toast("⚠ " + e.message);
-    btnElement.disabled = false;
-    btnElement.textContent = "✕";
+    btnElement.disabled = false; btnElement.textContent = "✕";
   }
 }
 
-// ── Poll ──────────────────────────────────────────────────────────────────────
 async function pollNow(btn) {
-  btn.disabled = true;
-  btn.textContent = "Triggering…";
+  btn.disabled = true; btn.textContent = "Triggering…";
   try {
     await triggerWorkflow("poll.yml");
     toast("↻ Poll workflow triggered — check back in ~2 min");
@@ -621,18 +594,13 @@ async function pollNow(btn) {
   }
 }
 
-// ── Pending bar ───────────────────────────────────────────────────────────────
 function showPending(msg, ttl = 180000) {
   const bar = document.getElementById("pending-bar");
   document.getElementById("pending-msg").textContent = msg + " (auto-refreshes in ~2 min)";
   bar.classList.add("show");
-  setTimeout(() => {
-    bar.classList.remove("show");
-    loadVideos();
-  }, ttl);
+  setTimeout(() => { bar.classList.remove("show"); loadVideos(); }, ttl);
 }
 
-// ── Tab switch ────────────────────────────────────────────────────────────────
 function switchTab(name) {
   document.querySelectorAll(".tab, .panel").forEach(el => el.classList.remove("on"));
   document.getElementById("tab-" + name).classList.add("on");
@@ -641,7 +609,6 @@ function switchTab(name) {
   if (name === "inbox")    loadVideos();
 }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
 let _toastTimer;
 function toast(msg) {
   const el = document.getElementById("toast");
@@ -650,7 +617,6 @@ function toast(msg) {
   _toastTimer = setTimeout(() => el.classList.remove("show"), 3000);
 }
 
-// ── Utils ─────────────────────────────────────────────────────────────────────
 function esc(s) {
   return String(s)
     .replace(/&/g,"&amp;").replace(/"/g,"&quot;")
@@ -664,7 +630,6 @@ function timeAgo(iso) {
   return Math.floor(d/86400) + "d ago";
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 loadVideos();
 </script>
 </body>
