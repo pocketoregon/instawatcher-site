@@ -115,7 +115,7 @@
     "timestamp": 1780419089,
     "stream_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/chaudhry_abdulrehman__DZFz_w0sqfr.mp4",
     "embed_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/chaudhry_abdulrehman__DZFz_w0sqfr.mp4",
-    "watched": false,
+    "watched": true,
     "added_at": "2026-06-09T07:26:25.709013+00:00",
     "error": null
   },
