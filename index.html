@@ -23,6 +23,7 @@
       --r:        10px;
       --head:     'Syne', sans-serif;
       --mono:     'Fira Code', monospace;
+      --feed-w:   420px;
     }
 
     body {
@@ -35,24 +36,24 @@
     body::after {
       content: '';
       position: fixed; inset: 0;
-      background: repeating-linear-gradient(
-        0deg, transparent, transparent 2px,
-        rgba(0,0,0,.05) 2px, rgba(0,0,0,.05) 4px
-      );
+      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);
       pointer-events: none; z-index: 9998;
     }
 
-    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px 80px; }
+    .wrap { max-width: 480px; margin: 0 auto; padding: 0 0 80px; }
 
+    /* ── header ── */
     header {
-      padding: 32px 0 24px;
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7,7,9,.92);
+      backdrop-filter: blur(12px);
+      padding: 14px 16px;
       display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 4px;
     }
-    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand { display: flex; align-items: center; gap: 8px; }
     .pulse {
-      width: 8px; height: 8px; border-radius: 50%;
+      width: 7px; height: 7px; border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 0 0 rgba(200,255,87,.6);
       animation: ripple 2s infinite;
@@ -62,9 +63,9 @@
       70%  { box-shadow: 0 0 0 8px rgba(200,255,87,0);  }
       100% { box-shadow: 0 0 0 0   rgba(200,255,87,0);  }
     }
-    .brand h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em; }
+    .brand h1 { font-size: 1.1rem; font-weight: 800; letter-spacing: -.03em; }
     .brand h1 em { color: var(--accent); font-style: normal; }
-    .hdr-btns { display: flex; gap: 8px; }
+    .hdr-right { display: flex; align-items: center; gap: 8px; }
 
     button {
       font-family: var(--head); cursor: pointer; border: none;
@@ -73,7 +74,7 @@
     .btn-sm {
       background: transparent;
       border: 1px solid var(--border2);
-      color: var(--muted); padding: 7px 14px; font-size: .8rem;
+      color: var(--muted); padding: 6px 12px; font-size: .78rem;
     }
     .btn-sm:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
     .btn-sm:disabled { opacity: .5; cursor: not-allowed; }
@@ -84,122 +85,162 @@
     .btn-primary:hover:not(:disabled) { background: #b8ef3d; transform: translateY(-1px); }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-    .tabs { display: flex; gap: 2px; padding: 16px 0 0; }
+    /* bulk delete bar */
+    .bulk-bar {
+      display: none;
+      position: sticky; top: 57px; z-index: 99;
+      background: rgba(200,255,87,.08);
+      border-bottom: 1px solid rgba(200,255,87,.2);
+      padding: 10px 16px;
+      align-items: center; justify-content: space-between;
+      gap: 10px;
+    }
+    .bulk-bar.show { display: flex; }
+    .bulk-info { font-family: var(--mono); font-size: .75rem; color: var(--accent); }
+    .bulk-actions { display: flex; gap: 8px; }
+    .btn-bulk-del {
+      background: rgba(255,79,107,.12);
+      border: 1px solid rgba(255,79,107,.3);
+      color: var(--red); padding: 6px 14px; font-size: .78rem;
+      border-radius: 7px;
+    }
+    .btn-bulk-del:hover:not(:disabled) { background: rgba(255,79,107,.25); }
+    .btn-bulk-del:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-bulk-cancel {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--muted); padding: 6px 12px; font-size: .78rem;
+      border-radius: 7px;
+    }
+    .btn-bulk-cancel:hover { color: var(--text); border-color: var(--border); }
+
+    /* ── tabs ── */
+    .tabs { display: flex; gap: 2px; padding: 12px 16px 0; }
     .tab {
       background: transparent;
       border: 1px solid transparent;
-      color: var(--muted); padding: 7px 18px;
-      border-radius: 7px; font-size: .88rem; font-weight: 600;
+      color: var(--muted); padding: 6px 16px;
+      border-radius: 7px; font-size: .85rem; font-weight: 600;
     }
     .tab.on { background: var(--surface); border-color: var(--border); color: var(--text); }
     .tab:hover:not(.on) { color: var(--text); }
 
-    .panel { display: none; padding-top: 24px; }
+    .panel { display: none; }
     .panel.on { display: block; }
 
+    /* ── inbox toolbar ── */
     .toolbar {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px;
+      padding: 12px 16px 8px;
     }
     .badge {
-      font-family: var(--mono); font-size: .72rem;
+      font-family: var(--mono); font-size: .7rem;
       background: var(--surface); border: 1px solid var(--border);
-      padding: 4px 12px; border-radius: 100px; color: var(--muted);
+      padding: 3px 10px; border-radius: 100px; color: var(--muted);
     }
     .badge strong { color: var(--accent); }
+    .toolbar-right { display: flex; gap: 6px; }
 
-    #grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
+    /* ── Instagram-style feed ── */
+    #feed { display: flex; flex-direction: column; gap: 0; }
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-      animation: up .35s ease both;
-      transition: border-color .2s, transform .2s, box-shadow .2s;
-    }
-    .card:hover {
-      border-color: var(--border2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
-    }
-    @keyframes up {
-      from { opacity:0; transform:translateY(12px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    /* ── thumbnail / player ── */
-    .thumb {
+    /* ── feed post card ── */
+    .post {
+      border-bottom: 1px solid var(--border);
       position: relative;
+      transition: background .15s;
+    }
+    .post.selected { background: rgba(200,255,87,.04); }
+
+    /* selection checkbox overlay */
+    .sel-overlay {
+      display: none;
+      position: absolute; top: 10px; left: 10px; z-index: 10;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: rgba(7,7,9,.6);
+      border: 2px solid rgba(255,255,255,.4);
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .sel-overlay svg { width: 14px; height: 14px; display: none; }
+    .post.selected .sel-overlay {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .post.selected .sel-overlay svg { display: block; }
+
+    /* show checkboxes in select mode */
+    body.select-mode .sel-overlay { display: flex; }
+    body.select-mode .post-video-wrap { cursor: default; }
+
+    /* post header */
+    .post-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+    }
+    .post-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #c8ff57, #57c8ff);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 700; color: #070709;
+      flex-shrink: 0;
+    }
+    .post-handle {
+      font-family: var(--mono); font-size: .8rem;
+      color: var(--text); font-weight: 600; flex: 1;
+    }
+    .post-meta { font-family: var(--mono); font-size: .68rem; color: var(--muted); }
+
+    /* video area */
+    .post-video-wrap {
+      position: relative;
+      width: 100%;
       aspect-ratio: 9/16;
       background: #0a0a10;
       cursor: pointer;
       overflow: hidden;
     }
-
-    /* thumbnail image — shown before play */
-    .thumb .t-img {
+    .post-video-wrap .t-img {
       position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform .3s;
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; transition: transform .3s;
     }
-    .thumb:hover .t-img { transform: scale(1.03); }
-
-    /* video element — hidden until play clicked */
-    .thumb .t-vid {
+    .post-video-wrap:hover .t-img { transform: scale(1.02); }
+    .post-video-wrap .t-vid {
       position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: none;
-      background: #0a0a10;
+      width: 100%; height: 100%; object-fit: contain;
+      display: none; background: #000;
     }
+    .post-video-wrap.playing .t-img     { display: none; }
+    .post-video-wrap.playing .t-vid     { display: block; }
+    .post-video-wrap.playing .play-btn  { display: none; }
 
-    /* when playing: hide image & overlay, show video */
-    .thumb.playing .t-img     { display: none; }
-    .thumb.playing .t-vid     { display: block; }
-    .thumb.playing .play-overlay { display: none; }
-
-    .play-overlay {
+    .play-btn {
       position: absolute; inset: 0;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,.25);
+      background: rgba(0,0,0,.2);
       transition: background .2s;
     }
-    .thumb:hover .play-overlay { background: rgba(0,0,0,.4); }
+    .post-video-wrap:hover .play-btn { background: rgba(0,0,0,.35); }
     .play-icon {
-      width: 44px; height: 44px;
-      background: rgba(255,255,255,.12);
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,.15);
       backdrop-filter: blur(6px);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      border: 1.5px solid rgba(255,255,255,.25);
+      border: 2px solid rgba(255,255,255,.3);
     }
-    .play-icon svg { width: 16px; height: 16px; margin-left: 3px; }
+    .play-icon svg { width: 18px; height: 18px; margin-left: 3px; }
 
-    .htag {
-      position: absolute; top: 8px; left: 8px;
-      font-family: var(--mono); font-size: .65rem;
-      background: rgba(7,7,9,.75); backdrop-filter: blur(4px);
-      color: var(--accent); padding: 3px 7px; border-radius: 4px;
-      border: 1px solid rgba(200,255,87,.2);
-      z-index: 2;
+    /* post footer */
+    .post-footer { padding: 10px 14px 14px; }
+    .post-title {
+      font-size: .88rem; font-weight: 600; line-height: 1.4;
+      margin-bottom: 10px; color: var(--text);
     }
-
-    .cinfo { padding: 12px 12px 8px; }
-    .ctitle {
-      font-size: .88rem; font-weight: 600; line-height: 1.35;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      margin-bottom: 3px;
-    }
-    .cmeta { font-family: var(--mono); font-size: .68rem; color: var(--muted); }
-
-    .cactions { display: flex; gap: 7px; padding: 0 12px 12px; }
+    .post-actions { display: flex; gap: 8px; }
     .btn-done {
       flex: 1; background: rgba(200,255,87,.07);
       border: 1px solid rgba(200,255,87,.2);
@@ -213,10 +254,16 @@
       padding: 8px 12px; font-size: .78rem; border-radius: 7px;
     }
     .btn-ext:hover { background: #333348; }
+    .btn-select {
+      background: var(--dim); color: var(--muted);
+      padding: 8px 12px; font-size: .78rem; border-radius: 7px;
+    }
+    .btn-select:hover { color: var(--text); }
+    .post.selected .btn-select { background: rgba(200,255,87,.12); color: var(--accent); }
 
+    /* ── empty / loading ── */
     .empty { text-align:center; padding: 72px 20px; color: var(--muted); }
     .empty .ico { font-size: 2.6rem; margin-bottom: 10px; }
-
     .spin {
       width: 28px; height: 28px; margin: 60px auto;
       border: 2.5px solid var(--border);
@@ -226,43 +273,60 @@
     }
     @keyframes rot { to { transform: rotate(360deg); } }
 
+    /* ── pending bar ── */
+    .pending-bar {
+      display: none;
+      background: rgba(200,255,87,.06);
+      border-bottom: 1px solid rgba(200,255,87,.15);
+      padding: 10px 16px;
+      font-family: var(--mono); font-size: .74rem;
+      color: var(--accent);
+    }
+    .pending-bar.show { display: flex; align-items: center; gap: 10px; }
+    .mini-spin {
+      width: 12px; height: 12px; flex-shrink: 0;
+      border: 1.5px solid rgba(200,255,87,.3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: rot .6s linear infinite;
+    }
+
+    /* ── settings ── */
+    .settings-wrap { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
     .sbox {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 22px; margin-bottom: 16px;
+      border-radius: var(--r); padding: 18px;
     }
     .sbox h2 {
-      font-size: .95rem; font-weight: 700; margin-bottom: 16px;
+      font-size: .9rem; font-weight: 700; margin-bottom: 14px;
       color: var(--text); display: flex; align-items: center; gap: 10px;
     }
     .sbox h2::after { content:''; flex:1; height:1px; background:var(--border); }
-
-    .field { margin-bottom: 12px; }
+    .field { margin-bottom: 10px; }
     .field label {
       display: block; font-family: var(--mono);
-      font-size: .7rem; color: var(--muted); margin-bottom: 5px;
+      font-size: .68rem; color: var(--muted); margin-bottom: 4px;
     }
     .irow { display: flex; gap: 8px; }
     input[type=text], input[type=password] {
       flex: 1;
       background: var(--bg); border: 1px solid var(--border);
       border-radius: 7px; color: var(--text);
-      font-family: var(--mono); font-size: .85rem;
-      padding: 9px 12px; outline: none;
+      font-family: var(--mono); font-size: .82rem;
+      padding: 8px 11px; outline: none;
       transition: border-color .2s;
     }
     input:disabled { opacity: .5; cursor: not-allowed; }
     input:focus { border-color: var(--accent); }
     input::placeholder { color: var(--muted); }
-
-    .hlist { list-style: none; margin-bottom: 12px; }
+    .hlist { list-style: none; margin-bottom: 10px; }
     .hrow {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 9px 12px;
+      padding: 8px 11px;
       background: var(--bg); border: 1px solid var(--border);
       border-radius: 7px; margin-bottom: 6px;
-      animation: up .25s ease;
     }
-    .hname { font-family: var(--mono); font-size: .82rem; color: var(--accent); }
+    .hname { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
     .btn-rm {
       background: rgba(255,79,107,.08);
       border: 1px solid rgba(255,79,107,.2);
@@ -272,6 +336,7 @@
     .btn-rm:hover:not(:disabled) { background: rgba(255,79,107,.2); }
     .btn-rm:disabled { opacity: .5; cursor: not-allowed; }
 
+    /* ── toast ── */
     #toast {
       position: fixed; bottom: 24px; left: 50%;
       transform: translateX(-50%) translateY(60px);
@@ -282,23 +347,6 @@
       z-index: 9999; white-space: nowrap;
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
-
-    .pending-bar {
-      display: none;
-      background: rgba(200,255,87,.06);
-      border: 1px solid rgba(200,255,87,.15);
-      border-radius: 8px; padding: 10px 16px;
-      font-family: var(--mono); font-size: .76rem;
-      color: var(--accent); margin-bottom: 16px;
-    }
-    .pending-bar.show { display: flex; align-items: center; gap: 10px; }
-    .mini-spin {
-      width: 12px; height: 12px;
-      border: 1.5px solid rgba(200,255,87,.3);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: rot .6s linear infinite; flex-shrink: 0;
-    }
   </style>
 </head>
 <body>
@@ -309,67 +357,79 @@
       <div class="pulse"></div>
       <h1>Insta<em>Watcher</em></h1>
     </div>
-    <div class="hdr-btns">
-      <button id="hdr-btn-poll" class="btn-sm" onclick="pollNow(this)">↻ Poll now</button>
-      <button class="btn-sm" onclick="switchTab('settings')">⚙ Settings</button>
+    <div class="hdr-right">
+      <button id="hdr-btn-poll" class="btn-sm" onclick="pollNow(this)">↻ Poll</button>
+      <button class="btn-sm" onclick="switchTab('settings')">⚙</button>
     </div>
   </header>
+
+  <!-- bulk delete bar -->
+  <div class="bulk-bar" id="bulk-bar">
+    <span class="bulk-info" id="bulk-info">0 selected</span>
+    <div class="bulk-actions">
+      <button class="btn-bulk-cancel" onclick="exitSelectMode()">Cancel</button>
+      <button class="btn-bulk-del" id="btn-bulk-del" onclick="bulkDelete()">Delete selected</button>
+    </div>
+  </div>
 
   <nav class="tabs">
     <button class="tab on" id="tab-inbox"    onclick="switchTab('inbox')">Inbox</button>
     <button class="tab"    id="tab-settings" onclick="switchTab('settings')">Settings</button>
   </nav>
 
+  <!-- INBOX -->
   <div class="panel on" id="panel-inbox">
     <div id="pending-bar" class="pending-bar">
       <div class="mini-spin"></div>
-      <span id="pending-msg">Workflow running — new videos will appear after it completes (~2 min)</span>
+      <span id="pending-msg">Workflow running…</span>
     </div>
     <div class="toolbar">
       <div class="badge"><strong id="count">0</strong> unwatched</div>
-      <button class="btn-sm" onclick="loadVideos()">Refresh</button>
+      <div class="toolbar-right">
+        <button class="btn-sm" id="btn-select-mode" onclick="toggleSelectMode()">Select</button>
+        <button class="btn-sm" onclick="loadVideos()">Refresh</button>
+      </div>
     </div>
-    <div id="grid"></div>
+    <div id="feed"></div>
   </div>
 
+  <!-- SETTINGS -->
   <div class="panel" id="panel-settings">
-    <div class="sbox">
-      <h2>GitHub Config</h2>
-      <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:14px;line-height:1.6">
-        The dashboard uses the GitHub API to trigger Actions workflows in your private backend repo.<br>
-        Create a fine-grained Personal Access Token with <strong style="color:var(--text)">Actions: Read & Write</strong>
-        and <strong style="color:var(--text)">Contents: Read & Write</strong> on the backend repo only.
-      </p>
-      <div class="field">
-        <label>GitHub Personal Access Token (stored locally only)</label>
-        <div class="irow">
+    <div class="settings-wrap">
+      <div class="sbox">
+        <h2>GitHub Config</h2>
+        <p style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:12px;line-height:1.6">
+          Fine-grained PAT with <strong style="color:var(--text)">Actions + Contents: Read & Write</strong> on the backend repo.
+        </p>
+        <div class="field">
+          <label>Personal Access Token</label>
           <input type="password" id="cfg-token" placeholder="github_pat_…" />
         </div>
-      </div>
-      <div class="field">
-        <label>Backend repo (owner/repo)</label>
-        <div class="irow">
-          <input type="text" id="cfg-backend" placeholder="yourusername/instawatcher-backend" />
+        <div class="field">
+          <label>Backend repo (owner/repo)</label>
+          <input type="text" id="cfg-backend" placeholder="yourusername/part1" />
         </div>
+        <button class="btn-primary" onclick="saveCfg()" style="margin-top:6px">Save config</button>
       </div>
-      <button class="btn-primary" onclick="saveCfg()" style="margin-top:4px">Save config</button>
-    </div>
-
-    <div class="sbox">
-      <h2>Watched Handles</h2>
-      <ul class="hlist" id="hlist"></ul>
-      <div class="irow">
-        <input type="text" id="new-handle" placeholder="@username" />
-        <button id="add-handle-btn" class="btn-primary" onclick="addHandle()">+ Add</button>
+      <div class="sbox">
+        <h2>Watched Handles</h2>
+        <ul class="hlist" id="hlist"></ul>
+        <div class="irow">
+          <input type="text" id="new-handle" placeholder="@username" />
+          <button id="add-handle-btn" class="btn-primary" onclick="addHandle()">+ Add</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
+</div>
 <div id="toast"></div>
 
 <script>
 let CFG = JSON.parse(localStorage.getItem("iw_cfg") || "{}");
+let selectMode = false;
+let selected = new Set();
+let allVideos = [];
 
 function saveCfg() {
   CFG.token   = document.getElementById("cfg-token").value.trim();
@@ -377,19 +437,14 @@ function saveCfg() {
   localStorage.setItem("iw_cfg", JSON.stringify(CFG));
   toast("✓ Config saved");
 }
-
 function loadCfg() {
   document.getElementById("cfg-token").value   = CFG.token   || "";
   document.getElementById("cfg-backend").value = CFG.backend || "";
 }
 
 async function ghAPI(path, opts = {}) {
-  if (!CFG.token || !CFG.backend) {
-    toast("⚠ Set your GitHub config in Settings first");
-    throw new Error("no config");
-  }
-  const base = `https://api.github.com/repos/${CFG.backend}`;
-  const res = await fetch(base + path, {
+  if (!CFG.token || !CFG.backend) { toast("⚠ Set GitHub config in Settings"); throw new Error("no config"); }
+  const res = await fetch(`https://api.github.com/repos/${CFG.backend}${path}`, {
     headers: {
       "Authorization": `Bearer ${CFG.token}`,
       "Accept": "application/vnd.github+json",
@@ -398,14 +453,10 @@ async function ghAPI(path, opts = {}) {
     },
     ...opts,
   });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`GitHub API ${res.status}: ${err}`);
-  }
+  if (!res.ok) { const e = await res.text(); throw new Error(`GitHub ${res.status}: ${e}`); }
   if (res.status === 204) return null;
   return res.json();
 }
-
 async function triggerWorkflow(workflow, inputs = {}) {
   await ghAPI(`/actions/workflows/${workflow}/dispatches`, {
     method: "POST",
@@ -413,214 +464,280 @@ async function triggerWorkflow(workflow, inputs = {}) {
   });
 }
 
+// ── Videos ────────────────────────────────────────────────────────────────────
 async function loadVideos() {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = '<div class="spin"></div>';
+  const feed = document.getElementById("feed");
+  feed.innerHTML = '<div class="spin"></div>';
   try {
-    const url = `videos.json?_=${Date.now()}`;
-    const res = await fetch(url);
+    const res = await fetch(`videos.json?_=${Date.now()}`);
     if (!res.ok) throw new Error(res.status);
     const all = await res.json();
-    const unwatched = all.filter(v => !v.watched);
-    renderVideos(unwatched);
+    allVideos = all.filter(v => !v.watched);
+    selected.clear();
+    renderFeed(allVideos);
   } catch (e) {
-    grid.innerHTML = `<div class="empty"><div class="ico">⚡</div><p>Could not load videos.json<br><small style="font-size:.75rem">${e.message}</small></p></div>`;
+    feed.innerHTML = `<div class="empty"><div class="ico">⚡</div><p>Could not load videos.json<br><small>${e.message}</small></p></div>`;
   }
 }
 
-function renderVideos(videos) {
-  const grid = document.getElementById("grid");
+function initials(handle) {
+  return handle.replace(/[^a-zA-Z]/g,'').substring(0,2).toUpperCase() || "??";
+}
+
+function renderFeed(videos) {
+  const feed = document.getElementById("feed");
   document.getElementById("count").textContent = videos.length;
   if (!videos.length) {
-    grid.innerHTML = `<div class="empty"><div class="ico">✦</div><p>All caught up — inbox empty.</p></div>`;
+    feed.innerHTML = `<div class="empty"><div class="ico">✦</div><p>All caught up — inbox empty.</p></div>`;
     return;
   }
   videos.sort((a, b) => new Date(b.added_at) - new Date(a.added_at));
-  grid.innerHTML = videos.map((v, i) => {
-    let decodedUrl = decodeURIComponent(v.stream_url || "");
-    let supabaseFileName = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
-    if (!supabaseFileName) supabaseFileName = `${v.handle}_${v.id}.mp4`;
-
-    const thumbHtml = v.thumbnail
-      ? `<img class="t-img" src="${esc(v.thumbnail)}" alt="" loading="lazy" />`
-      : `<div class="t-img" style="background:#0a0a10"></div>`;
-
+  feed.innerHTML = videos.map((v, i) => {
+    let decoded = decodeURIComponent(v.stream_url || "");
+    let sbFile  = decoded.substring(decoded.lastIndexOf('/') + 1) || `${v.handle}_${v.id}.mp4`;
+    const isSelected = selected.has(v.id);
     return `
-    <div class="card" id="card-${esc(v.id)}" style="animation-delay:${i * 50}ms">
-      <div class="thumb" id="thumb-${esc(v.id)}" onclick="togglePlay('${esc(v.id)}','${esc(v.stream_url)}','${esc(v.thumbnail || '')}')">
-        ${thumbHtml}
-        <video class="t-vid" id="vid-${esc(v.id)}"
-          playsinline controls preload="none"></video>
-        <div class="play-overlay">
+    <div class="post${isSelected ? ' selected' : ''}" id="post-${esc(v.id)}">
+      <div class="sel-overlay" onclick="toggleSelect('${esc(v.id)}')">
+        <svg viewBox="0 0 14 14" fill="none" stroke="#070709" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="2,7 5.5,11 12,3"/>
+        </svg>
+      </div>
+
+      <div class="post-header">
+        <div class="post-avatar">${initials(v.handle)}</div>
+        <div>
+          <div class="post-handle">@${esc(v.handle)}</div>
+          <div class="post-meta">${timeAgo(v.added_at)}</div>
+        </div>
+      </div>
+
+      <div class="post-video-wrap" id="wrap-${esc(v.id)}"
+        onclick="handleVideoClick('${esc(v.id)}','${esc(v.stream_url)}','${esc(v.thumbnail||'')}')">
+        ${v.thumbnail
+          ? `<img class="t-img" src="${esc(v.thumbnail)}" alt="" loading="lazy" />`
+          : `<div class="t-img" style="background:#0a0a10;width:100%;height:100%"></div>`}
+        <video class="t-vid" id="vid-${esc(v.id)}" playsinline controls preload="none"></video>
+        <div class="play-btn">
           <div class="play-icon">
             <svg viewBox="0 0 16 16" fill="white"><polygon points="3,1 15,8 3,15"/></svg>
           </div>
         </div>
-        <span class="htag">@${esc(v.handle)}</span>
       </div>
-      <div class="cinfo">
-        <div class="ctitle">${esc(v.title)}</div>
-        <div class="cmeta">${timeAgo(v.added_at)}</div>
-      </div>
-      <div class="cactions">
-        <button class="btn-done" id="done-${esc(v.id)}"
-          onclick="markDone('${esc(v.id)}','${esc(supabaseFileName)}')">✓ Done — delete</button>
-        <button class="btn-ext"
-          onclick="window.open('${esc(v.stream_url)}','_blank')" title="Open video">↗</button>
+
+      <div class="post-footer">
+        <div class="post-title">${esc(v.title)}</div>
+        <div class="post-actions">
+          <button class="btn-done" id="done-${esc(v.id)}"
+            onclick="markDone('${esc(v.id)}','${esc(sbFile)}')">✓ Done</button>
+          <button class="btn-select" onclick="toggleSelect('${esc(v.id)}')">${isSelected ? '✓ Selected' : '+ Select'}</button>
+          <button class="btn-ext" onclick="window.open('${esc(v.stream_url)}','_blank')">↗</button>
+        </div>
       </div>
     </div>
     `;
   }).join("");
 }
 
-function togglePlay(id, url, thumbnail) {
-  const thumb = document.getElementById("thumb-" + id);
-  const vid   = document.getElementById("vid-"   + id);
-
-  if (thumb.classList.contains("playing")) {
-    vid.pause();
-    vid.src = "";
-    thumb.classList.remove("playing");
+function handleVideoClick(id, url, thumbnail) {
+  if (selectMode) { toggleSelect(id); return; }
+  const wrap = document.getElementById("wrap-" + id);
+  const vid  = document.getElementById("vid-"  + id);
+  if (wrap.classList.contains("playing")) {
+    vid.pause(); vid.src = "";
+    wrap.classList.remove("playing");
     return;
   }
-
-  // Pause any other playing videos
-  document.querySelectorAll(".thumb.playing").forEach(t => {
-    const v = t.querySelector(".t-vid");
+  document.querySelectorAll(".post-video-wrap.playing").forEach(w => {
+    const v = w.querySelector(".t-vid");
     if (v) { v.pause(); v.src = ""; }
-    t.classList.remove("playing");
+    w.classList.remove("playing");
   });
-
-  // Set poster so thumbnail shows while video loads — no grey flash
   if (thumbnail) vid.poster = thumbnail;
   vid.src = url;
-  thumb.classList.add("playing");
+  wrap.classList.add("playing");
   vid.play().catch(() => {});
+}
+
+// ── Select mode ───────────────────────────────────────────────────────────────
+function toggleSelectMode() {
+  selectMode = !selectMode;
+  if (selectMode) {
+    document.body.classList.add("select-mode");
+    document.getElementById("btn-select-mode").textContent = "Cancel";
+    document.getElementById("bulk-bar").classList.add("show");
+  } else {
+    exitSelectMode();
+  }
+}
+
+function exitSelectMode() {
+  selectMode = false;
+  selected.clear();
+  document.body.classList.remove("select-mode");
+  document.getElementById("btn-select-mode").textContent = "Select";
+  document.getElementById("bulk-bar").classList.remove("show");
+  document.querySelectorAll(".post.selected").forEach(p => p.classList.remove("selected"));
+  document.querySelectorAll(".btn-select").forEach(b => b.textContent = "+ Select");
+  updateBulkInfo();
+}
+
+function toggleSelect(id) {
+  if (!selectMode) {
+    selectMode = true;
+    document.body.classList.add("select-mode");
+    document.getElementById("btn-select-mode").textContent = "Cancel";
+    document.getElementById("bulk-bar").classList.add("show");
+  }
+  const post = document.getElementById("post-" + id);
+  const btn  = post ? post.querySelector(".btn-select") : null;
+  if (selected.has(id)) {
+    selected.delete(id);
+    post && post.classList.remove("selected");
+    btn && (btn.textContent = "+ Select");
+  } else {
+    selected.add(id);
+    post && post.classList.add("selected");
+    btn && (btn.textContent = "✓ Selected");
+  }
+  updateBulkInfo();
+}
+
+function updateBulkInfo() {
+  const n = selected.size;
+  document.getElementById("bulk-info").textContent = `${n} selected`;
+  document.getElementById("btn-bulk-del").disabled = n === 0;
+}
+
+async function bulkDelete() {
+  if (selected.size === 0) return;
+  const btn = document.getElementById("btn-bulk-del");
+  btn.disabled = true;
+  btn.textContent = "Deleting…";
+  const ids = [...selected];
+  let done = 0;
+  for (const id of ids) {
+    const v = allVideos.find(x => x.id === id);
+    if (!v) continue;
+    let decoded = decodeURIComponent(v.stream_url || "");
+    let sbFile  = decoded.substring(decoded.lastIndexOf('/') + 1) || `${v.handle}_${v.id}.mp4`;
+    try {
+      await triggerWorkflow("delete.yml", { video_id: id, supabase_file_path: sbFile });
+      const post = document.getElementById("post-" + id);
+      if (post) {
+        post.style.transition = "all .3s ease";
+        post.style.opacity = "0";
+        post.style.transform = "translateX(-20px)";
+        setTimeout(() => post.remove(), 300);
+      }
+      done++;
+    } catch(e) {
+      toast(`⚠ Failed: ${id}`);
+    }
+  }
+  setTimeout(() => {
+    document.getElementById("count").textContent = document.querySelectorAll(".post").length;
+  }, 400);
+  toast(`🗑 ${done} delete workflow(s) triggered`);
+  showPending(`Deleting ${done} video(s)…`);
+  exitSelectMode();
 }
 
 async function markDone(id, supabasePath) {
   const btn  = document.getElementById("done-" + id);
-  const card = document.getElementById("card-" + id);
-  btn.disabled = true;
-  btn.textContent = "Deleting…";
+  const post = document.getElementById("post-" + id);
+  btn.disabled = true; btn.textContent = "Deleting…";
   try {
     await triggerWorkflow("delete.yml", { video_id: id, supabase_file_path: supabasePath });
-    card.style.transition = "all .35s ease";
-    card.style.opacity = "0";
-    card.style.transform = "scale(.94)";
-    setTimeout(() => { card.remove(); updateCount(); }, 370);
-    toast("🗑 Delete workflow triggered");
-    showPending("Deleting from Supabase Storage…");
+    post.style.transition = "all .35s ease";
+    post.style.opacity = "0"; post.style.transform = "translateX(-20px)";
+    setTimeout(() => { post.remove(); document.getElementById("count").textContent = document.querySelectorAll(".post").length; }, 370);
+    toast("🗑 Delete triggered");
+    showPending("Deleting from Supabase…");
   } catch (e) {
-    btn.disabled = false;
-    btn.textContent = "✓ Done — delete";
+    btn.disabled = false; btn.textContent = "✓ Done";
     toast("⚠ " + e.message);
   }
 }
 
-function updateCount() {
-  document.getElementById("count").textContent = document.querySelectorAll(".card").length;
-}
-
+// ── Handles ───────────────────────────────────────────────────────────────────
 async function loadHandles() {
   const list = document.getElementById("hlist");
   try {
     const data = await ghAPI("/contents/handles.json");
-    const handles = JSON.parse(atob(data.content));
-    renderHandles(handles);
-  } catch (e) {
-    list.innerHTML = `<li style="color:var(--muted);font-size:.8rem;padding:6px 0">Could not load handles — check config.</li>`;
+    renderHandles(JSON.parse(atob(data.content)));
+  } catch(e) {
+    list.innerHTML = `<li style="color:var(--muted);font-size:.8rem;padding:6px 0">Could not load handles.</li>`;
   }
 }
-
 function renderHandles(handles) {
   const list = document.getElementById("hlist");
-  if (!handles.length) {
-    list.innerHTML = `<li style="color:var(--muted);font-size:.8rem;padding:6px 0">No handles yet.</li>`;
-    return;
-  }
+  if (!handles.length) { list.innerHTML = `<li style="color:var(--muted);font-size:.8rem;padding:6px 0">No handles yet.</li>`; return; }
   list.innerHTML = handles.map(h => `
     <li class="hrow">
       <span class="hname">@${esc(h)}</span>
-      <button class="btn-rm" onclick="removeHandle(this, '${esc(h)}')">✕</button>
-    </li>
-  `).join("");
+      <button class="btn-rm" onclick="removeHandle(this,'${esc(h)}')">✕</button>
+    </li>`).join("");
 }
-
 async function addHandle() {
-  const input  = document.getElementById("new-handle");
-  const btn    = document.getElementById("add-handle-btn");
-  const handle = input.value.trim().replace(/^@/, "").toLowerCase();
+  const input = document.getElementById("new-handle");
+  const btn   = document.getElementById("add-handle-btn");
+  const handle = input.value.trim().replace(/^@/,"").toLowerCase();
   if (!handle) return;
-  btn.disabled = true; btn.textContent = "Adding...";
-  input.disabled = true;
+  btn.disabled = true; btn.textContent = "Adding..."; input.disabled = true;
   try {
     await triggerWorkflow("handles.yml", { action: "add", handle });
-    input.value = "";
-    toast(`✓ @${handle} added — workflow triggered`);
-    showPending(`Adding @${handle}…`);
-    setTimeout(loadHandles, 8000);
-  } catch (e) {
-    toast("⚠ " + e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = "+ Add";
-    input.disabled = false;
-  }
+    input.value = ""; toast(`✓ @${handle} added`);
+    showPending(`Adding @${handle}…`); setTimeout(loadHandles, 8000);
+  } catch(e) { toast("⚠ " + e.message); }
+  finally { btn.disabled = false; btn.textContent = "+ Add"; input.disabled = false; }
 }
-
-async function removeHandle(btnElement, handle) {
-  btnElement.disabled = true; btnElement.textContent = "...";
+async function removeHandle(btnEl, handle) {
+  btnEl.disabled = true; btnEl.textContent = "...";
   try {
     await triggerWorkflow("handles.yml", { action: "remove", handle });
-    toast(`Removed @${handle}`);
-    showPending(`Removing @${handle}…`);
-    setTimeout(loadHandles, 8000);
-  } catch (e) {
-    toast("⚠ " + e.message);
-    btnElement.disabled = false; btnElement.textContent = "✕";
-  }
+    toast(`Removed @${handle}`); showPending(`Removing @${handle}…`); setTimeout(loadHandles, 8000);
+  } catch(e) { toast("⚠ " + e.message); btnEl.disabled = false; btnEl.textContent = "✕"; }
 }
 
+// ── Poll ──────────────────────────────────────────────────────────────────────
 async function pollNow(btn) {
-  btn.disabled = true; btn.textContent = "Triggering…";
+  btn.disabled = true; btn.textContent = "…";
   try {
     await triggerWorkflow("poll.yml");
-    toast("↻ Poll workflow triggered — check back in ~2 min");
+    toast("↻ Poll triggered — check back in ~2 min");
     showPending("Polling Instagram…");
-  } catch (e) {
-    toast("⚠ " + e.message);
-  } finally {
-    setTimeout(() => { btn.disabled = false; btn.textContent = "↻ Poll now"; }, 4000);
-  }
+  } catch(e) { toast("⚠ " + e.message); }
+  finally { setTimeout(() => { btn.disabled = false; btn.textContent = "↻ Poll"; }, 4000); }
 }
 
+// ── Pending ───────────────────────────────────────────────────────────────────
 function showPending(msg, ttl = 180000) {
   const bar = document.getElementById("pending-bar");
-  document.getElementById("pending-msg").textContent = msg + " (auto-refreshes in ~2 min)";
+  document.getElementById("pending-msg").textContent = msg + " (refreshes in ~2 min)";
   bar.classList.add("show");
   setTimeout(() => { bar.classList.remove("show"); loadVideos(); }, ttl);
 }
 
+// ── Tabs ──────────────────────────────────────────────────────────────────────
 function switchTab(name) {
-  document.querySelectorAll(".tab, .panel").forEach(el => el.classList.remove("on"));
+  document.querySelectorAll(".tab,.panel").forEach(el => el.classList.remove("on"));
   document.getElementById("tab-" + name).classList.add("on");
   document.getElementById("panel-" + name).classList.add("on");
   if (name === "settings") { loadCfg(); loadHandles(); }
   if (name === "inbox")    loadVideos();
 }
 
-let _toastTimer;
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let _tt;
 function toast(msg) {
   const el = document.getElementById("toast");
   el.textContent = msg; el.classList.add("show");
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => el.classList.remove("show"), 3000);
+  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove("show"), 3000);
 }
 
 function esc(s) {
-  return String(s)
-    .replace(/&/g,"&amp;").replace(/"/g,"&quot;")
-    .replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 function timeAgo(iso) {
   const d = (Date.now() - new Date(iso)) / 1000;
