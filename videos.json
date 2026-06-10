@@ -211,7 +211,7 @@
     "timestamp": 1780729262,
     "stream_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/nortxnoproblem_DZPD2CLNgM1.mp4",
     "embed_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/nortxnoproblem_DZPD2CLNgM1.mp4",
-    "watched": false,
+    "watched": true,
     "added_at": "2026-06-09T10:34:32.267895+00:00",
     "error": null
   },
