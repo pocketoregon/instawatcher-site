@@ -55,7 +55,7 @@
     "timestamp": 1780233460,
     "stream_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/iamharshvikas_DZAR6MNBahs.mp4",
     "embed_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/iamharshvikas_DZAR6MNBahs.mp4",
-    "watched": false,
+    "watched": true,
     "added_at": "2026-06-09T05:32:30.594344+00:00",
     "error": null
   },
