@@ -367,7 +367,7 @@
     "timestamp": 1781319153,
     "stream_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/thevibefounder_DZgjqX6u_-T.mp4",
     "embed_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/thevibefounder_DZgjqX6u_-T.mp4",
-    "watched": false,
+    "watched": true,
     "added_at": "2026-06-13T03:24:05.083537+00:00",
     "error": null
   }
