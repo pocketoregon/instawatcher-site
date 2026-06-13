@@ -355,7 +355,7 @@
     "timestamp": 1781281465,
     "stream_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/chaudhry_abdulrehman__DZfgW--M4Tp.mp4",
     "embed_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/chaudhry_abdulrehman__DZfgW--M4Tp.mp4",
-    "watched": false,
+    "watched": true,
     "added_at": "2026-06-12T19:03:50.717082+00:00",
     "error": null
   },
