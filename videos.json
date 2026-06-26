@@ -967,7 +967,7 @@
     "timestamp": 1782367995,
     "stream_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/adityasaidwhat_DZ_5OxDJ-9L.mp4",
     "embed_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/adityasaidwhat_DZ_5OxDJ-9L.mp4",
-    "watched": false,
+    "watched": true,
     "added_at": "2026-06-25T08:56:48.429783+00:00",
     "error": null
   },
