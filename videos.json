@@ -1015,7 +1015,7 @@
     "timestamp": 1782411928,
     "stream_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/iamharshvikas_DaBM7Tmhm1l.mp4",
     "embed_url": "https://mpmwdxcfxsnuqiqjvwxb.supabase.co/storage/v1/object/public/videos/iamharshvikas_DaBM7Tmhm1l.mp4",
-    "watched": false,
+    "watched": true,
     "added_at": "2026-06-25T19:55:16.854093+00:00",
     "error": null
   }
